@@ -1,0 +1,852 @@
+[include mainsail.cfg]
+
+[mcu]
+serial:/dev/serial/by-id/usb-Klipper_stm32f407xx_470034000A5032324B343020-if00
+#   The serial port to connect to the MCU. If unsure (or if it
+#   changes) see the "Where's my serial port?" section of the FAQ.
+#   This parameter must be provided when using a serial port.
+#baud: 250000
+#   The baud rate to use. The default is 250000.
+#canbus_uuid:
+#   If using a device connected to a CAN bus then this sets the unique
+#   chip identifier to connect to. This value must be provided when using
+#   CAN bus for communication.
+#canbus_interface:
+#   If using a device connected to a CAN bus then this sets the CAN
+#   network interface to use. The default is 'can0'.
+restart_method:command
+#   This controls the mechanism the host will use to reset the
+#   micro-controller. The choices are 'arduino', 'cheetah', 'rpi_usb',
+#   and 'command'. The 'arduino' method (toggle DTR) is common on
+#   Arduino boards and clones. The 'cheetah' method is a special
+#   method needed for some Fysetc Cheetah boards. The 'rpi_usb' method
+#   is useful on Raspberry Pi boards with micro-controllers powered
+#   over USB - it briefly disables power to all USB ports to
+#   accomplish a micro-controller reset. The 'command' method involves
+#   sending a Klipper command to the micro-controller so that it can
+#   reset itself. The default is 'arduino' if the micro-controller
+#   communicates over a serial port, 'command' otherwise.
+[printer]
+kinematics:corexy
+#   The type of printer in use. This option may be one of: cartesian,
+#   corexy, corexz, hybrid_corexy, hybrid_corexz, generic_cartesian,
+#   rotary_delta, delta, deltesian, polar, winch, or none.
+#   This parameter must be specified.
+max_velocity:500
+#   Maximum velocity (in mm/s) of the toolhead (relative to the
+#   print). This value may be changed at runtime using the
+#   SET_VELOCITY_LIMIT command. This parameter must be specified.
+max_accel:100000
+#   Maximum acceleration (in mm/s^2) of the toolhead (relative to the
+#   print). Although this parameter is described as a "maximum"
+#   acceleration, in practice most moves that accelerate or decelerate
+#   will do so at the rate specified here. The value specified here
+#   may be changed at runtime using the SET_VELOCITY_LIMIT command.
+#   This parameter must be specified.
+#minimum_cruise_ratio: 0.5
+#   Most moves will accelerate to a cruising speed, travel at that
+#   cruising speed, and then decelerate. However, some moves that
+#   travel a short distance could nominally accelerate and then
+#   immediately decelerate. This option reduces the top speed of these
+#   moves to ensure there is always a minimum distance traveled at a
+#   cruising speed. That is, it enforces a minimum distance traveled
+#   at cruising speed relative to the total distance traveled. It is
+#   intended to reduce the top speed of short zigzag moves (and thus
+#   reduce printer vibration from these moves). For example, a
+#   minimum_cruise_ratio of 0.5 would ensure that a standalone 1.5mm
+#   move would have a minimum cruising distance of 0.75mm. Specify a
+#   ratio of 0.0 to disable this feature (there would be no minimum
+#   cruising distance enforced between acceleration and deceleration).
+#   The value specified here may be changed at runtime using the
+#   SET_VELOCITY_LIMIT command. The default is 0.5.
+#square_corner_velocity: 5.0
+#   The maximum velocity (in mm/s) that the toolhead may travel a 90
+#   degree corner at. A non-zero value can reduce changes in extruder
+#   flow rates by enabling instantaneous velocity changes of the
+#   toolhead during cornering. This value configures the internal
+#   centripetal velocity cornering algorithm; corners with angles
+#   larger than 90 degrees will have a higher cornering velocity while
+#   corners with angles less than 90 degrees will have a lower
+#   cornering velocity. If this is set to zero then the toolhead will
+#   decelerate to zero at each corner. The value specified here may be
+#   changed at runtime using the SET_VELOCITY_LIMIT command. The
+#   default is 5mm/s.
+[stepper_x]
+step_pin:PE3
+#   Step GPIO pin (triggered high). This parameter must be provided.
+dir_pin:PE2
+#   Direction GPIO pin (high indicates positive direction). This
+#   parameter must be provided.
+enable_pin:!PE4
+#   Enable pin (default is enable high; use ! to indicate enable
+#   low). If this parameter is not provided then the stepper motor
+#   driver must always be enabled.
+rotation_distance:40
+#   Distance (in mm) that the axis travels with one full rotation of
+#   the stepper motor (or final gear if gear_ratio is specified).
+#   This parameter must be provided.
+microsteps:16
+#   The number of microsteps the stepper motor driver uses. This
+#   parameter must be provided.
+#full_steps_per_rotation: 200
+#   The number of full steps for one rotation of the stepper motor.
+#   Set this to 200 for a 1.8 degree stepper motor or set to 400 for a
+#   0.9 degree motor. The default is 200.
+#gear_ratio:
+#   The gear ratio if the stepper motor is connected to the axis via a
+#   gearbox. For example, one may specify "5:1" if a 5 to 1 gearbox is
+#   in use. If the axis has multiple gearboxes one may specify a comma
+#   separated list of gear ratios (for example, "57:11, 2:1"). If a
+#   gear_ratio is specified then rotation_distance specifies the
+#   distance the axis travels for one full rotation of the final gear.
+#   The default is to not use a gear ratio.
+#step_pulse_duration:
+#   The minimum time between the step pulse signal edge and the
+#   following "unstep" signal edge. This is also used to set the
+#   minimum time between a step pulse and a direction change signal.
+#   The default is 0.000000100 (100ns) for TMC steppers that are
+#   configured in UART or SPI mode, and the default is 0.000002 (which
+#   is 2us) for all other steppers.
+endstop_pin:PA15
+#   Endstop switch detection pin. If this endstop pin is on a
+#   different mcu than the stepper motor then it enables "multi-mcu
+#   homing". This parameter must be provided for the X, Y, and Z
+#   steppers on cartesian style printers.
+position_min: 0
+#   Minimum valid distance (in mm) the user may command the stepper to
+#   move to.  The default is 0mm.
+position_endstop:0
+#   Location of the endstop (in mm). This parameter must be provided
+#   for the X, Y, and Z steppers on cartesian style printers.
+position_max:230
+
+#   Maximum valid distance (in mm) the user may command the stepper to
+#   move to. This parameter must be provided for the X, Y, and Z
+#   steppers on cartesian style printers.
+homing_speed: 60
+#   Maximum velocity (in mm/s) of the stepper when homing. The default
+#   is 5mm/s.
+#homing_retract_dist: 5.0
+#   Distance to backoff (in mm) before homing a second time during
+#   homing. Set this to zero to disable the second home. The default
+#   is 5mm.
+#homing_retract_speed:
+#   Speed to use on the retract move after homing in case this should
+#   be different from the homing speed, which is the default for this
+#   parameter
+second_homing_speed:30
+#   Velocity (in mm/s) of the stepper when performing the second home.
+#   The default is homing_speed/2.
+#homing_positive_dir:
+#   If true, homing will cause the stepper to move in a positive
+#   direction (away from zero); if false, home towards zero. It is
+#   better to use the default than to specify this parameter. The
+#   default is true if position_endstop is near position_max and false
+#   if near position_min.
+[stepper_y]
+step_pin:PE0
+#   Step GPIO pin (triggered high). This parameter must be provided.
+dir_pin:PB9
+#   Direction GPIO pin (high indicates positive direction). This
+#   parameter must be provided.
+enable_pin:!PE1
+#   Enable pin (default is enable high; use ! to indicate enable
+#   low). If this parameter is not provided then the stepper motor
+#   driver must always be enabled.
+rotation_distance:40
+#   Distance (in mm) that the axis travels with one full rotation of
+#   the stepper motor (or final gear if gear_ratio is specified).
+#   This parameter must be provided.
+microsteps:16
+#   The number of microsteps the stepper motor driver uses. This
+#   parameter must be provided.
+#full_steps_per_rotation: 200
+#   The number of full steps for one rotation of the stepper motor.
+#   Set this to 200 for a 1.8 degree stepper motor or set to 400 for a
+#   0.9 degree motor. The default is 200.
+#gear_ratio:
+#   The gear ratio if the stepper motor is connected to the axis via a
+#   gearbox. For example, one may specify "5:1" if a 5 to 1 gearbox is
+#   in use. If the axis has multiple gearboxes one may specify a comma
+#   separated list of gear ratios (for example, "57:11, 2:1"). If a
+#   gear_ratio is specified then rotation_distance specifies the
+#   distance the axis travels for one full rotation of the final gear.
+#   The default is to not use a gear ratio.
+#step_pulse_duration:
+#   The minimum time between the step pulse signal edge and the
+#   following "unstep" signal edge. This is also used to set the
+#   minimum time between a step pulse and a direction change signal.
+#   The default is 0.000000100 (100ns) for TMC steppers that are
+#   configured in UART or SPI mode, and the default is 0.000002 (which
+#   is 2us) for all other steppers.
+endstop_pin:PD2
+#   Endstop switch detection pin. If this endstop pin is on a
+#   different mcu than the stepper motor then it enables "multi-mcu
+#   homing". This parameter must be provided for the X, Y, and Z
+#   steppers on cartesian style printers.
+#position_min: 0
+#   Minimum valid distance (in mm) the user may command the stepper to
+#   move to.  The default is 0mm.
+position_endstop:0
+#   Location of the endstop (in mm). This parameter must be provided
+#   for the X, Y, and Z steppers on cartesian style printers.
+position_max:200
+#   Maximum valid distance (in mm) the user may command the stepper to
+#   move to. This parameter must be provided for the X, Y, and Z
+#   steppers on cartesian style printers.
+homing_speed: 60
+#   Maximum velocity (in mm/s) of the stepper when homing. The default
+#   is 5mm/s.
+#homing_retract_dist: 5.0
+#   Distance to backoff (in mm) before homing a second time during
+#   homing. Set this to zero to disable the second home. The default
+#   is 5mm.
+#homing_retract_speed:
+#   Speed to use on the retract move after homing in case this should
+#   be different from the homing speed, which is the default for this
+#   parameter
+second_homing_speed:30
+#   Velocity (in mm/s) of the stepper when performing the second home.
+#   The default is homing_speed/2.
+#homing_positive_dir:
+#   If true, homing will cause the stepper to move in a positive
+#   direction (away from zero); if false, home towards zero. It is
+#   better to use the default than to specify this parameter. The
+#   default is true if position_endstop is near position_max and false
+#   if near position_min.
+[stepper_z]
+step_pin:PB5
+#   Step GPIO pin (triggered high). This parameter must be provided.
+dir_pin:PB4
+#   Direction GPIO pin (high indicates positive direction). This
+#   parameter must be provided.
+enable_pin:!PB8
+#   Enable pin (default is enable high; use ! to indicate enable
+#   low). If this parameter is not provided then the stepper motor
+#   driver must always be enabled.
+rotation_distance:2
+#   Distance (in mm) that the axis travels with one full rotation of
+#   the stepper motor (or final gear if gear_ratio is specified).
+#   This parameter must be provided.
+microsteps:16
+#   The number of microsteps the stepper motor driver uses. This
+#   parameter must be provided.
+#full_steps_per_rotation: 200
+#   The number of full steps for one rotation of the stepper motor.
+#   Set this to 200 for a 1.8 degree stepper motor or set to 400 for a
+#   0.9 degree motor. The default is 200.
+#gear_ratio:
+#   The gear ratio if the stepper motor is connected to the axis via a
+#   gearbox. For example, one may specify "5:1" if a 5 to 1 gearbox is
+#   in use. If the axis has multiple gearboxes one may specify a comma
+#   separated list of gear ratios (for example, "57:11, 2:1"). If a
+#   gear_ratio is specified then rotation_distance specifies the
+#   distance the axis travels for one full rotation of the final gear.
+#   The default is to not use a gear ratio.
+#step_pulse_duration:
+#   The minimum time between the step pulse signal edge and the
+#   following "unstep" signal edge. This is also used to set the
+#   minimum time between a step pulse and a direction change signal.
+#   The default is 0.000000100 (100ns) for TMC steppers that are
+#   configured in UART or SPI mode, and the default is 0.000002 (which
+#   is 2us) for all other steppers.
+endstop_pin:probe:z_virtual_endstop
+#   Endstop switch detection pin. If this endstop pin is on a
+#   different mcu than the stepper motor then it enables "multi-mcu
+#   homing". This parameter must be provided for the X, Y, and Z
+#   steppers on cartesian style printers.
+#position_min: 
+#   Minimum valid distance (in mm) the user may command the stepper to
+#   move to.  The default is 0mm.
+
+#   Location of the endstop (in mm). This parameter must be provided
+#   for the X, Y, and Z steppers on cartesian style printers.
+position_max:200
+#   Maximum valid distance (in mm) the user may command the stepper to
+#   move to. This parameter must be provided for the X, Y, and Z
+#   steppers on cartesian style printers.
+#homing_speed: 5.0
+#   Maximum velocity (in mm/s) of the stepper when homing. The default
+#   is 5mm/s.
+#homing_retract_dist: 5.0
+#   Distance to backoff (in mm) before homing a second time during
+#   homing. Set this to zero to disable the second home. The default
+#   is 5mm.
+#homing_retract_speed:
+#   Speed to use on the retract move after homing in case this should
+#   be different from the homing speed, which is the default for this
+#   parameter
+#second_homing_speed:
+#   Velocity (in mm/s) of the stepper when performing the second home.
+#   The default is homing_speed/2.
+#homing_positive_dir:
+#   If true, homing will cause the stepper to move in a positive
+#   direction (away from zero); if false, home towards zero. It is
+#   better to use the default than to specify this parameter. The
+#   default is true if position_endstop is near position_max and false
+#   if near position_min.
+[stepper_z1]
+step_pin:PD6
+#   Step GPIO pin (triggered high). This parameter must be provided.
+dir_pin:PD3
+#   Direction GPIO pin (high indicates positive direction). This
+#   parameter must be provided.
+enable_pin:!PB3
+#   Enable pin (default is enable high; use ! to indicate enable
+#   low). If this parameter is not provided then the stepper motor
+#   driver must always be enabled.
+rotation_distance:2
+#   Distance (in mm) that the axis travels with one full rotation of
+#   the stepper motor (or final gear if gear_ratio is specified).
+#   This parameter must be provided.
+microsteps:16
+#   The number of microsteps the stepper motor driver uses. This
+#   parameter must be provided.
+#full_steps_per_rotation: 200
+#   The number of full steps for one rotation of the stepper motor.
+#   Set this to 200 for a 1.8 degree stepper motor or set to 400 for a
+#   0.9 degree motor. The default is 200.
+#gear_ratio:
+#   The gear ratio if the stepper motor is connected to the axis via a
+#   gearbox. For example, one may specify "5:1" if a 5 to 1 gearbox is
+#   in use. If the axis has multiple gearboxes one may specify a comma
+#   separated list of gear ratios (for example, "57:11, 2:1"). If a
+#   gear_ratio is specified then rotation_distance specifies the
+#   distance the axis travels for one full rotation of the final gear.
+#   The default is to not use a gear ratio.
+#step_pulse_duration:
+#   The minimum time between the step pulse signal edge and the
+#   following "unstep" signal edge. This is also used to set the
+#   minimum time between a step pulse and a direction change signal.
+#   The default is 0.000000100 (100ns) for TMC steppers that are
+#   configured in UART or SPI mode, and the default is 0.000002 (which
+#   is 2us) for all other steppers.
+
+[extruder]
+step_pin:PD15
+dir_pin:PA1
+enable_pin:!PA3
+microsteps:16
+rotation_distance:30
+#full_steps_per_rotation:
+gear_ratio:5:1
+#   See the "stepper" section for a description of the above
+#   parameters. If none of the above parameters are specified then no
+#   stepper will be associated with the nozzle hotend (though a
+#   SYNC_EXTRUDER_MOTION command may associate one at run-time).
+nozzle_diameter:0.4
+#   Diameter of the nozzle orifice (in mm). This parameter must be
+#   provided.
+filament_diameter:1.75
+#   The nominal diameter of the raw filament (in mm) as it enters the
+#   extruder. This parameter must be provided.
+#max_extrude_cross_section:
+#   Maximum area (in mm^2) of an extrusion cross section (eg,
+#   extrusion width multiplied by layer height). This setting prevents
+#   excessive amounts of extrusion during relatively small XY moves.
+#   If a move requests an extrusion rate that would exceed this value
+#   it will cause an error to be returned. The default is: 4.0 *
+#   nozzle_diameter^2
+#instantaneous_corner_velocity: 1.000
+#   The maximum instantaneous velocity change (in mm/s) of the
+#   extruder during the junction of two moves. The default is 1mm/s.
+#max_extrude_only_distance: 50.0
+#   Maximum length (in mm of raw filament) that a retraction or
+#   extrude-only move may have. If a retraction or extrude-only move
+#   requests a distance greater than this value it will cause an error
+#   to be returned. The default is 50mm.
+#max_extrude_only_velocity:
+#max_extrude_only_accel:
+#   Maximum velocity (in mm/s) and acceleration (in mm/s^2) of the
+#   extruder motor for retractions and extrude-only moves. These
+#   settings do not have any impact on normal printing moves. If not
+#   specified then they are calculated to match the limit an XY
+#   printing move with a cross section of 4.0*nozzle_diameter^2 would
+#   have.
+#pressure_advance: 0.0
+#   The amount of raw filament to push into the extruder during
+#   extruder acceleration. An equal amount of filament is retracted
+#   during deceleration. It is measured in millimeters per
+#   millimeter/second. The default is 0, which disables pressure
+#   advance.
+#pressure_advance_smooth_time: 0.040
+#   A time range (in seconds) to use when calculating the average
+#   extruder velocity for pressure advance. A larger value results in
+#   smoother extruder movements. This parameter may not exceed 200ms.
+#   This setting only applies if pressure_advance is non-zero. The
+#   default is 0.040 (40 milliseconds).
+#
+# The remaining variables describe the extruder heater.
+heater_pin:PE5
+#   PWM output pin controlling the heater. This parameter must be
+#   provided.
+#max_power: 1.0
+#   The maximum power (expressed as a value from 0.0 to 1.0) that the
+#   heater_pin may be set to. The value 1.0 allows the pin to be set
+#   fully enabled for extended periods, while a value of 0.5 would
+#   allow the pin to be enabled for no more than half the time. This
+#   setting may be used to limit the total power output (over extended
+#   periods) to the heater. The default is 1.0.
+sensor_type:EPCOS 100K B57560G104F
+#   Type of sensor - common thermistors are "EPCOS 100K B57560G104F",
+#   "ATC Semitec 104GT-2", "ATC Semitec 104NT-4-R025H42G", "Generic
+#   3950","Honeywell 100K 135-104LAG-J01", "NTC 100K MGB18-104F39050L32",
+#   "SliceEngineering 450", and "TDK NTCG104LH104JT1". See the
+#   "Temperature sensors" section for other sensors. This parameter
+#   must be provided.
+sensor_pin:PC1
+#   Analog input pin connected to the sensor. This parameter must be
+#   provided.
+#pullup_resistor: 4700
+#   The resistance (in ohms) of the pullup attached to the thermistor.
+#   This parameter is only valid when the sensor is a thermistor. The
+#   default is 4700 ohms.
+#smooth_time: 1.0
+#   A time value (in seconds) over which temperature measurements will
+#   be smoothed to reduce the impact of measurement noise. The default
+#   is 1 seconds.
+#control:pid
+#   Control algorithm (either pid or watermark). This parameter must
+#   be provided.
+#pid_Kp:100
+#pid_Ki:100
+#pid_Kd:100
+#   The proportional (pid_Kp), integral (pid_Ki), and derivative
+#   (pid_Kd) settings for the PID feedback control system. Klipper
+#   evaluates the PID settings with the following general formula:
+#     heater_pwm = (Kp*error + Ki*integral(error) - Kd*derivative(error)) / 255
+#   Where "error" is "requested_temperature - measured_temperature"
+#   and "heater_pwm" is the requested heating rate with 0.0 being full
+#   off and 1.0 being full on. Consider using the PID_CALIBRATE
+#   command to obtain these parameters. The pid_Kp, pid_Ki, and pid_Kd
+#   parameters must be provided for PID heaters.
+#max_delta: 2.0
+#   On 'watermark' controlled heaters this is the number of degrees in
+#   Celsius above the target temperature before disabling the heater
+#   as well as the number of degrees below the target before
+#   re-enabling the heater. The default is 2 degrees Celsius.
+#pwm_cycle_time: 0.100
+#   Time in seconds for each software PWM cycle of the heater. It is
+#   not recommended to set this unless there is an electrical
+#   requirement to switch the heater faster than 10 times a second.
+#   The default is 0.100 seconds.
+#min_extrude_temp: 170
+#   The minimum temperature (in Celsius) at which extruder move
+#   commands may be issued. The default is 170 Celsius.
+min_temp:-20
+max_temp:270
+#   The maximum range of valid temperatures (in Celsius) that the
+#   heater must remain within. This controls a safety feature
+#   implemented in the micro-controller code - should the measured
+#   temperature ever fall outside this range then the micro-controller
+#   will go into a shutdown state. This check can help detect some
+#   heater and sensor hardware failures. Set this range just wide
+#   enough so that reasonable temperatures do not result in an error.
+#   These parameters must be provided.
+[heater_bed]
+heater_pin:PA0
+sensor_type:EPCOS 100K B57560G104F
+sensor_pin:PC0
+#control:pid
+min_temp:-20
+max_temp:120
+#pid_Kp:100
+#pid_Ki:100
+#pid_Kd:100
+#   See the "extruder" section for a description of the above parameters.
+#[bed_mesh]
+#speed: 50
+#   The speed (in mm/s) of non-probing moves during the calibration.
+#   The default is 50.
+#horizontal_move_z: 5
+#   The height (in mm) that the head should be commanded to move to
+#   just prior to starting a probe operation. The default is 5.
+#mesh_min:
+#   Defines the minimum X, Y coordinate of the mesh for rectangular
+#   beds. This coordinate is relative to the probe's location. This
+#   will be the first point probed, nearest to the origin. This
+#   parameter must be provided for rectangular beds.
+#mesh_max:
+#   Defines the maximum X, Y coordinate of the mesh for rectangular
+#   beds. Adheres to the same principle as mesh_min, however this will
+#   be the furthest point probed from the bed's origin. This parameter
+#   must be provided for rectangular beds.
+#probe_count: 3, 3
+#   For rectangular beds, this is a comma separate pair of integer
+#   values X, Y defining the number of points to probe along each
+#   axis. A single value is also valid, in which case that value will
+#   be applied to both axes. Default is 3, 3.
+#round_probe_count: 5
+#   For round beds, this integer value defines the maximum number of
+#   points to probe along each axis. This value must be an odd number.
+#   Default is 5.
+#fade_start: 1.0
+#   The gcode z position in which to start phasing out z-adjustment
+#   when fade is enabled. Default is 1.0.
+#fade_end: 0.0
+#   The gcode z position in which phasing out completes. When set to a
+#   value below fade_start, fade is disabled. It should be noted that
+#   fade may add unwanted scaling along the z-axis of a print. If a
+#   user wishes to enable fade, a value of 10.0 is recommended.
+#   Default is 0.0, which disables fade.
+#fade_target:
+#   The z position in which fade should converge. When this value is
+#   set to a non-zero value it must be within the range of z-values in
+#   the mesh. Users that wish to converge to the z homing position
+#   should set this to 0. Default is the average z value of the mesh.
+#split_delta_z: .025
+#   The amount of Z difference (in mm) along a move that will trigger
+#   a split. Default is .025.
+#move_check_distance: 5.0
+#   The distance (in mm) along a move to check for split_delta_z.
+#   This is also the minimum length that a move can be split. Default
+#   is 5.0.
+#mesh_pps: 2, 2
+#   A comma separated pair of integers X, Y defining the number of
+#   points per segment to interpolate in the mesh along each axis. A
+#   "segment" can be defined as the space between each probed point.
+#   The user may enter a single value which will be applied to both
+#   axes. Default is 2, 2.
+#algorithm: lagrange
+#   The interpolation algorithm to use. May be either "lagrange" or
+#   "bicubic". This option will not affect 3x3 grids, which are forced
+#   to use lagrange sampling. Default is lagrange.
+#bicubic_tension: .2
+#   When using the bicubic algorithm the tension parameter above may
+#   be applied to change the amount of slope interpolated. Larger
+#   numbers will increase the amount of slope, which results in more
+#   curvature in the mesh. Default is .2.
+#zero_reference_position:
+#   An optional X,Y coordinate that specifies the location on the bed
+#   where Z = 0.  When this option is specified the mesh will be offset
+#   so that zero Z adjustment occurs at this location.  The default is
+#   no zero reference.
+#faulty_region_1_min:
+#faulty_region_1_max:
+#   Optional points that define a faulty region.  See docs/Bed_Mesh.md
+#   for details on faulty regions.  Up to 99 faulty regions may be added.
+#   By default no faulty regions are set.
+#adaptive_margin:
+#   An optional margin (in mm) to be added around the bed area used by
+#   the defined print objects when generating an adaptive mesh.
+#scan_overshoot:
+#  The maximum amount of travel (in mm) available outside of the mesh.
+#  For rectangular beds this applies to travel on the X axis, and for round beds
+#  it applies to the entire radius.  The tool must be able to travel the amount
+#  specified outside of the mesh.  This value is used to optimize the travel
+#  path when performing a "rapid scan".  The minimum value that may be specified
+#  is 1.  The default is no overshoot.
+
+[bltouch]
+sensor_pin:PC8
+#   Pin connected to the BLTouch sensor pin. Most BLTouch devices
+#   require a pullup on the sensor pin (prefix the pin name with "^").
+#   This parameter must be provided.
+control_pin:PA8
+#   Pin connected to the BLTouch control pin. This parameter must be
+#   provided.
+#pin_move_time: 0.680
+#   The amount of time (in seconds) to wait for the BLTouch pin to
+#   move up or down. The default is 0.680 seconds.
+#stow_on_each_sample: True
+#   This determines if Klipper should command the pin to move up
+#   between each probe attempt when performing a multiple probe
+#   sequence. Read the directions in docs/BLTouch.md before setting
+#   this to False. The default is True.
+#probe_with_touch_mode: False
+#   If this is set to True then Klipper will probe with the device in
+#   "touch_mode". The default is False (probing in "pin_down" mode).
+#pin_up_reports_not_triggered: True
+#   Set if the BLTouch consistently reports the probe in a "not
+#   triggered" state after a successful "pin_up" command. This should
+#   be True for all genuine BLTouch devices. Read the directions in
+#   docs/BLTouch.md before setting this to False. The default is True.
+#pin_up_touch_mode_reports_triggered: True
+#   Set if the BLTouch consistently reports a "triggered" state after
+#   the commands "pin_up" followed by "touch_mode". This should be
+#   True for all genuine BLTouch devices. Read the directions in
+#   docs/BLTouch.md before setting this to False. The default is True.
+#set_output_mode:
+#   Request a specific sensor pin output mode on the BLTouch V3.0 (and
+#   later). This setting should not be used on other types of probes.
+#   Set to "5V" to request a sensor pin output of 5 Volts (only use if
+#   the controller board needs 5V mode and is 5V tolerant on its input
+#   signal line). Set to "OD" to request the sensor pin output use
+#   open drain mode. The default is to not request an output mode.
+x_offset:-15
+y_offset:-5
+z_offset:0
+#speed:
+#lift_speed:
+#samples:
+#sample_retract_dist:
+#samples_result:
+#samples_tolerance:
+#samples_tolerance_retries:
+#   See the "probe" section for information on these parameters.
+[fan]
+pin:PC14
+#   Output pin controlling the fan. This parameter must be provided.
+#max_power: 1.0
+#   The maximum power (expressed as a value from 0.0 to 1.0) that the
+#   pin may be set to. The value 1.0 allows the pin to be set fully
+#   enabled for extended periods, while a value of 0.5 would allow the
+#   pin to be enabled for no more than half the time. This setting may
+#   be used to limit the total power output (over extended periods) to
+#   the fan. If this value is less than 1.0 then fan speed requests
+#   will be scaled between zero and max_power (for example, if
+#   max_power is .9 and a fan speed of 80% is requested then the fan
+#   power will be set to 72%). The default is 1.0.
+#shutdown_speed: 0
+#   The desired fan speed (expressed as a value from 0.0 to 1.0) if
+#   the micro-controller software enters an error state. The default
+#   is 0.
+#cycle_time: 0.010
+#   The amount of time (in seconds) for each PWM power cycle to the
+#   fan. It is recommended this be 10 milliseconds or greater when
+#   using software based PWM. The default is 0.010 seconds.
+#hardware_pwm: False
+#   Enable this to use hardware PWM instead of software PWM. Most fans
+#   do not work well with hardware PWM, so it is not recommended to
+#   enable this unless there is an electrical requirement to switch at
+#   very high speeds. When using hardware PWM the actual cycle time is
+#   constrained by the implementation and may be significantly
+#   different than the requested cycle_time. The default is False.
+#kick_start_time: 0.100
+#   Time (in seconds) to run the fan at full speed when either first
+#   enabling or increasing it by more than 50% (helps get the fan
+#   spinning). The default is 0.100 seconds.
+#off_below: 0.0
+#   The minimum input speed which will power the fan (expressed as a
+#   value from 0.0 to 1.0). When a speed lower than off_below is
+#   requested the fan will instead be turned off. This setting may be
+#   used to prevent fan stalls and to ensure kick starts are
+#   effective. The default is 0.0.
+#
+#   This setting should be recalibrated whenever max_power is adjusted.
+#   To calibrate this setting, start with off_below set to 0.0 and the
+#   fan spinning. Gradually lower the fan speed to determine the lowest
+#   input speed which reliably drives the fan without stalls. Set
+#   off_below to the duty cycle corresponding to this value (for
+#   example, 12% -> 0.12) or slightly higher.
+#tachometer_pin:
+#   Tachometer input pin for monitoring fan speed. A pullup is generally
+#   required. This parameter is optional.
+#tachometer_ppr: 2
+#   When tachometer_pin is specified, this is the number of pulses per
+#   revolution of the tachometer signal. For a BLDC fan this is
+#   normally half the number of poles. The default is 2.
+#tachometer_poll_interval: 0.0015
+#   When tachometer_pin is specified, this is the polling period of the
+#   tachometer pin, in seconds. The default is 0.0015, which is fast
+#   enough for fans below 10000 RPM at 2 PPR. This must be smaller than
+#   30/(tachometer_ppr*rpm), with some margin, where rpm is the
+#   maximum speed (in RPM) of the fan.
+#enable_pin:
+#   Optional pin to enable power to the fan. This can be useful for fans
+#   with dedicated PWM inputs. Some of these fans stay on even at 0% PWM
+#   input. In such a case, the PWM pin can be used normally, and e.g. a
+#   ground-switched FET(standard fan pin) can be used to control power to
+#   the fan.
+[heater_fan heatbreak_cooling_fan]
+pin:PB1
+#max_power:
+#shutdown_speed:
+#cycle_time:
+#hardware_pwm:
+#kick_start_time:
+#off_below:
+#tachometer_pin:
+#tachometer_ppr:
+#tachometer_poll_interval:
+#enable_pin:
+#   See the "fan" section for a description of the above parameters.
+#heater: extruder
+#   Name of the config section defining the heater that this fan is
+#   associated with. If a comma separated list of heater names is
+#   provided here, then the fan will be enabled when any of the given
+#   heaters are enabled. The default is "extruder".
+#heater_temp: 50.0
+#   A temperature (in Celsius) that the heater must drop below before
+#   the fan is disabled. The default is 50 Celsius.
+#fan_speed: 1.0
+#   The fan speed (expressed as a value from 0.0 to 1.0) that the fan
+#   will be set to when its associated heater is enabled. The default
+#   is 1.0
+[tmc2209 stepper_x]
+uart_pin:PD5
+#tx_pin:
+#select_pins:
+#interpolate: True
+run_current:0.7
+#hold_current:
+#sense_resistor: 0.110
+#stealthchop_threshold: 0
+#   See the "tmc2208" section for the definition of these parameters.
+#coolstep_threshold:
+#   The velocity (in mm/s) to set the TMC driver internal "CoolStep"
+#   threshold to. If set, the coolstep feature will be enabled when
+#   the stepper motor velocity is near or above this value. Important
+#   - if coolstep_threshold is set and "sensorless homing" is used,
+#   then one must ensure that the homing speed is above the coolstep
+#   threshold! The default is to not enable the coolstep feature.
+#uart_address:
+#   The address of the TMC2209 chip for UART messages (an integer
+#   between 0 and 3). This is typically used when multiple TMC2209
+#   chips are connected to the same UART pin. The default is zero.
+#driver_MULTISTEP_FILT: True
+#driver_IHOLDDELAY: 8
+#driver_TPOWERDOWN: 20
+#driver_TBL: 2
+#driver_TOFF: 3
+#driver_HEND: 0
+#driver_HSTRT: 5
+#driver_PWM_AUTOGRAD: True
+#driver_PWM_AUTOSCALE: True
+#driver_PWM_LIM: 12
+#driver_PWM_REG: 8
+#driver_PWM_FREQ: 1
+#driver_PWM_GRAD: 14
+#driver_PWM_OFS: 36
+#driver_FREEWHEEL: 0
+#driver_SGTHRS: 0
+#driver_SEMIN: 0
+#driver_SEUP: 0
+#driver_SEMAX: 0
+#driver_SEDN: 0
+#driver_SEIMIN: 0
+#   Set the given register during the configuration of the TMC2209
+#   chip. This may be used to set custom motor parameters. The
+#   defaults for each parameter are next to the parameter name in the
+#   above list.
+#diag_pin:
+#   The micro-controller pin attached to the DIAG line of the TMC2209
+#   chip. The pin is normally prefaced with "^" to enable a pullup.
+#   Setting this creates a "tmc2209_stepper_x:virtual_endstop" virtual
+#   pin which may be used as the stepper's endstop_pin. Doing this
+#   enables "sensorless homing". (Be sure to also set driver_SGTHRS to
+#   an appropriate sensitivity value.) The default is to not enable
+#   sensorless homing.
+[tmc2209 stepper_y]
+uart_pin:PD7
+#tx_pin:
+#select_pins:
+#interpolate: True
+run_current:0.7
+#hold_current:
+#sense_resistor: 0.110
+#stealthchop_threshold: 0
+#   See the "tmc2208" section for the definition of these parameters.
+#coolstep_threshold:
+#   The velocity (in mm/s) to set the TMC driver internal "CoolStep"
+#   threshold to. If set, the coolstep feature will be enabled when
+#   the stepper motor velocity is near or above this value. Important
+#   - if coolstep_threshold is set and "sensorless homing" is used,
+#   then one must ensure that the homing speed is above the coolstep
+#   threshold! The default is to not enable the coolstep feature.
+#uart_address:
+#   The address of the TMC2209 chip for UART messages (an integer
+#   between 0 and 3). This is typically used when multiple TMC2209
+#   chips are connected to the same UART pin. The default is zero.
+#driver_MULTISTEP_FILT: True
+#driver_IHOLDDELAY: 8
+#driver_TPOWERDOWN: 20
+#driver_TBL: 2
+#driver_TOFF: 3
+#driver_HEND: 0
+#driver_HSTRT: 5
+#driver_PWM_AUTOGRAD: True
+#driver_PWM_AUTOSCALE: True
+#driver_PWM_LIM: 12
+#driver_PWM_REG: 8
+#driver_PWM_FREQ: 1
+#driver_PWM_GRAD: 14
+#driver_PWM_OFS: 36
+#driver_FREEWHEEL: 0
+#driver_SGTHRS: 0
+#driver_SEMIN: 0
+#driver_SEUP: 0
+#driver_SEMAX: 0
+#driver_SEDN: 0
+#driver_SEIMIN: 0
+#   Set the given register during the configuration of the TMC2209
+#   chip. This may be used to set custom motor parameters. The
+#   defaults for each parameter are next to the parameter name in the
+#   above list.
+#diag_pin:
+#   The micro-controller pin attached to the DIAG line of the TMC2209
+#   chip. The pin is normally prefaced with "^" to enable a pullup.
+#   Setting this creates a "tmc2209_stepper_x:virtual_endstop" virtual
+#   pin which may be used as the stepper's endstop_pin. Doing this
+#   enables "sensorless homing". (Be sure to also set driver_SGTHRS to
+#   an appropriate sensitivity value.) The default is to not enable
+#   sensorless homing.
+[tmc2209 extruder]
+uart_pin:PD8
+#tx_pin:
+#select_pins:
+#interpolate: True
+run_current:0.5
+#hold_current:
+#sense_resistor: 0.110
+#stealthchop_threshold: 0
+#   See the "tmc2208" section for the definition of these parameters.
+#coolstep_threshold:
+#   The velocity (in mm/s) to set the TMC driver internal "CoolStep"
+#   threshold to. If set, the coolstep feature will be enabled when
+#   the stepper motor velocity is near or above this value. Important
+#   - if coolstep_threshold is set and "sensorless homing" is used,
+#   then one must ensure that the homing speed is above the coolstep
+#   threshold! The default is to not enable the coolstep feature.
+#uart_address:
+#   The address of the TMC2209 chip for UART messages (an integer
+#   between 0 and 3). This is typically used when multiple TMC2209
+#   chips are connected to the same UART pin. The default is zero.
+#driver_MULTISTEP_FILT: True
+#driver_IHOLDDELAY: 8
+#driver_TPOWERDOWN: 20
+#driver_TBL: 2
+#driver_TOFF: 3
+#driver_HEND: 0
+#driver_HSTRT: 5
+#driver_PWM_AUTOGRAD: True
+#driver_PWM_AUTOSCALE: True
+#driver_PWM_LIM: 12
+#driver_PWM_REG: 8
+#driver_PWM_FREQ: 1
+#driver_PWM_GRAD: 14
+#driver_PWM_OFS: 36
+#driver_FREEWHEEL: 0
+#driver_SGTHRS: 0
+#driver_SEMIN: 0
+#driver_SEUP: 0
+#driver_SEMAX: 0
+#driver_SEDN: 0
+#driver_SEIMIN: 0
+#   Set the given register during the configuration of the TMC2209
+#   chip. This may be used to set custom motor parameters. The
+#   defaults for each parameter are next to the parameter name in the
+#   above list.
+#diag_pin:
+#   The micro-controller pin attached to the DIAG line of the TMC2209
+#   chip. The pin is normally prefaced with "^" to enable a pullup.
+#   Setting this creates a "tmc2209_stepper_x:virtual_endstop" virtual
+#   pin which may be used as the stepper's endstop_pin. Doing this
+#   enables "sensorless homing". (Be sure to also set driver_SGTHRS to
+#   an appropriate sensitivity value.) The default is to not enable
+#   sensorless homing.
+
+#*# <---------------------- SAVE_CONFIG ---------------------->
+#*# DO NOT EDIT THIS BLOCK OR BELOW. The contents are auto-generated.
+#*#
+#*# [heater_bed]
+#*# control = pid
+#*# pid_kp = 69.594
+#*# pid_ki = 1.657
+#*# pid_kd = 730.741
+#*#
+#*# [extruder]
+#*# control = pid
+#*# pid_kp = 37.118
+#*# pid_ki = 16.497
+#*# pid_kd = 20.879
